@@ -45,7 +45,6 @@ public class WeChatAuthenticateSuccessHandler extends SavedRequestAwareAuthentic
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
-
         logger.info("登录成功");
 
         String header = request.getHeader("Authorization");
