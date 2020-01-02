@@ -18,7 +18,7 @@ public class WechatUserDetailService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String openid) throws UsernameNotFoundException {
         WechatUser wechatUser=userMapper.getByOpenId(openid);
-        if (wechatUser==null) throw new UsernameNotFoundException("openId not find");
+        if (wechatUser==null) throw new UsernameNotFoundException("openId not found");
         return  new WechatUserDetails(wechatUser.getNickName(),wechatUser.getPassword(),wechatUser.getOpenId(),wechatUser.getAccPoint(),wechatUser.getGender(),wechatUser.getCity(),wechatUser.getProvince(),AuthorityUtils.NO_AUTHORITIES);
     }
 }

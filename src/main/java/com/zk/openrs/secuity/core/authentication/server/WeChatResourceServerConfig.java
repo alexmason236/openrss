@@ -22,7 +22,7 @@ public class WeChatResourceServerConfig extends ResourceServerConfigurerAdapter 
         http.authorizeRequests()
                 .mvcMatchers(securityProperties.getAuthorizedUrl(),"/oauth/token","/wx/user/login")
                 .permitAll()
-                .anyRequest().permitAll()
+                .anyRequest().authenticated()
                 .and()
                 .apply(openIdAuthenticationSecurityConfig)
         .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
