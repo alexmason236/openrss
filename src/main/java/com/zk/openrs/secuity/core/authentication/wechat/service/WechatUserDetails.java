@@ -11,14 +11,16 @@ public class WechatUserDetails extends User {
     String gender;
     String city;
     String province;
+    String nickName;
 
-    public WechatUserDetails(String openId, String password,String username,float accPoint,String gender,String city, String province,Collection<? extends GrantedAuthority> authorities) {
-        super(username, password, authorities);
+    public WechatUserDetails(String openId, String password,String nickName,float accPoint,String gender,String city, String province,Collection<? extends GrantedAuthority> authorities) {
+        super(openId, password, authorities);
         this.accPoint=accPoint;
         this.city=city;
         this.gender=gender;
         this.openId=openId;
         this.province=province;
+        this.nickName=nickName;
     }
 
     public String getOpenId() {
@@ -59,5 +61,13 @@ public class WechatUserDetails extends User {
 
     public void setProvince(String province) {
         this.province = province;
+    }
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
     }
 }
