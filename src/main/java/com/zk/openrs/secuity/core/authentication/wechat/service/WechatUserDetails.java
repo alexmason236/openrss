@@ -12,7 +12,7 @@ public class WechatUserDetails extends User {
     String city;
     String province;
 
-    public WechatUserDetails(String username, String password,String openId,float accPoint,String gender,String city, String province,Collection<? extends GrantedAuthority> authorities) {
+    public WechatUserDetails(String openId, String password,String username,float accPoint,String gender,String city, String province,Collection<? extends GrantedAuthority> authorities) {
         super(username, password, authorities);
         this.accPoint=accPoint;
         this.city=city;

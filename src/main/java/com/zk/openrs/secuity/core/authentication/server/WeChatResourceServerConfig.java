@@ -20,7 +20,7 @@ public class WeChatResourceServerConfig extends ResourceServerConfigurerAdapter 
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .mvcMatchers(securityProperties.getAuthorizedUrl(),"/oauth/token","/wx/user/login")
+                .antMatchers(securityProperties.getAuthorizedUrl(),"/oauth/token","/wx/user/login")
                 .permitAll()
                 .anyRequest().authenticated()
                 .and()
