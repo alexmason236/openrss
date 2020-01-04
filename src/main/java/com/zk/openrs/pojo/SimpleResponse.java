@@ -6,6 +6,10 @@ public class SimpleResponse implements Serializable {
     String msg;
     Object object;
 
+    public SimpleResponse(String msg) {
+        this.msg = msg;
+    }
+
     public SimpleResponse(String msg, Object object) {
         this.msg = msg;
         this.object = object;

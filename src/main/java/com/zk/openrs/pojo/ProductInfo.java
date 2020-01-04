@@ -8,20 +8,26 @@ public class ProductInfo implements Serializable {
     String productBindAccount;
     String productBindPassword;
     String productCurrentStatus;
+    String productBindPicturePath;
 
-    public ProductInfo(String productName, String productBindAccount, String productBindPassword, String productCurrentStatus) {
+    public ProductInfo() {
+    }
+
+    public ProductInfo(String productName, String productBindAccount, String productBindPassword, String productCurrentStatus, String productBindPicturePath) {
         this.productName = productName;
         this.productBindAccount = productBindAccount;
         this.productBindPassword = productBindPassword;
         this.productCurrentStatus = productCurrentStatus;
+        this.productBindPicturePath = productBindPicturePath;
     }
 
-    public ProductInfo(int id, String productName, String productBindAccount, String productBindPassword, String productCurrentStatus) {
+    public ProductInfo(int id, String productName, String productBindAccount, String productBindPassword, String productCurrentStatus, String productBindPicturePath) {
         this.id = id;
         this.productName = productName;
         this.productBindAccount = productBindAccount;
         this.productBindPassword = productBindPassword;
         this.productCurrentStatus = productCurrentStatus;
+        this.productBindPicturePath = productBindPicturePath;
     }
 
     public int getId() {
@@ -62,5 +68,13 @@ public class ProductInfo implements Serializable {
 
     public void setProductCurrentStatus(String productCurrentStatus) {
         this.productCurrentStatus = productCurrentStatus;
+    }
+
+    public String getProductBindPicturePath() {
+        return productBindPicturePath;
+    }
+
+    public void setProductBindPicturePath(String productBindPicturePath) {
+        this.productBindPicturePath = productBindPicturePath;
     }
 }
