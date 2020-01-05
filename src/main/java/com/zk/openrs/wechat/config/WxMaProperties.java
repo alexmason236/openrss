@@ -41,6 +41,8 @@ public class WxMaProperties {
          */
         private String msgDataFormat;
 
+        private String template_id;
+
     }
 
 }
