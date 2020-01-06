@@ -1,11 +1,15 @@
 package com.zk.openrs.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 
 public class ProductInfo implements Serializable {
     int id;
     String productName;
+    @JsonIgnore
     String productBindAccount;
+    @JsonIgnore
     String productBindPassword;
     String productCurrentStatus;
     String productBindPicturePath;
