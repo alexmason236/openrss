@@ -3,14 +3,19 @@ package com.zk.openrs.controller;
 import com.github.tobato.fastdfs.domain.conn.FdfsWebServer;
 import com.github.tobato.fastdfs.domain.fdfs.StorePath;
 import com.github.tobato.fastdfs.service.FastFileStorageClient;
+import com.zk.openrs.amqp.rabbitmq.RabbitMQConfig;
+import com.zk.openrs.amqp.rabbitmq.RabbitMqConstant;
 import com.zk.openrs.pojo.ProductInfo;
 import com.zk.openrs.pojo.PruductCurrentStatus;
+import com.zk.openrs.pojo.ReceivedMobileData;
 import com.zk.openrs.pojo.SimpleResponse;
 import com.zk.openrs.service.ProductService;
+import com.zk.openrs.wechat.utils.ParseReceivedMobileMessage;
 import me.chanjar.weixin.common.error.WxErrorException;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +35,8 @@ public class ProductController {
     private FdfsWebServer fdfsWebServer;
     @Resource
     private ProductService productService;
+    @Autowired
+    private AmqpTemplate rabbitTemplate;
 
     @PostMapping("/add")
     public SimpleResponse addProduct(@RequestParam("productName") String productName,
@@ -54,7 +61,13 @@ public class ProductController {
                                      @RequestParam("productId") int  productId, Authentication authentication) throws WxErrorException {
             System.out.println(formId+" "+rentalTime+" "+productId+" "+authentication);
             return  productService.buyProduct(formId,rentalTime,productId,authentication);
+    }
 
+    @PostMapping("/mobileSendMsg")
+    public SimpleResponse getMobileSendMsg(ReceivedMobileData receivedMobileData){
+        logger.info(receivedMobileData.toString());
+        rabbitTemplate.convertAndSend(RabbitMqConstant.TOPIC_EXCHANGE, ParseReceivedMobileMessage.parse(receivedMobileData.getMessageContent()),receivedMobileData);
+        return new SimpleResponse(receivedMobileData.toString());
     }
 
     private String getResAccessUrl(StorePath storePath) {
