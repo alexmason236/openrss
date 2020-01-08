@@ -17,4 +17,13 @@
         select * from product
     </select>
 
+    <insert id="createOrder" parameterType="com.zk.openrs.pojo.Order" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO
+       		orders
+       	VALUES
+       		(default,#{productId}, #{formId}, #{rentalTime}, #{openId},#{createTime})
+    </insert>
+
+
+
 </mapper>

@@ -5,10 +5,7 @@ import com.github.tobato.fastdfs.domain.fdfs.StorePath;
 import com.github.tobato.fastdfs.service.FastFileStorageClient;
 import com.zk.openrs.amqp.rabbitmq.RabbitMqConstant;
 import com.zk.openrs.amqp.rabbitmq.sender.RabbitSender;
-import com.zk.openrs.pojo.ProductInfo;
-import com.zk.openrs.pojo.PruductCurrentStatus;
-import com.zk.openrs.pojo.ReceivedMobileData;
-import com.zk.openrs.pojo.SimpleResponse;
+import com.zk.openrs.pojo.*;
 import com.zk.openrs.service.ProductService;
 import com.zk.openrs.utils.ParseReceivedMobileMessageUtils;
 import me.chanjar.weixin.common.error.WxErrorException;
@@ -55,11 +52,15 @@ public class ProductController {
     public List<ProductInfo> getAllProduct() {
         return productService.getAllProduct();
     }
+
     @PostMapping("/buyProduct")
-    public SimpleResponse buyProduct(@RequestParam("formId") String formId,@RequestParam("rentalTime") int rentalTime,
-                                     @RequestParam("productId") int  productId, Authentication authentication) throws Exception {
-            System.out.println(formId+" "+rentalTime+" "+productId+" "+authentication);
-            return  productService.buyProduct(formId,rentalTime,productId,authentication);
+    public SimpleResponse buyProduct(@RequestParam("formId") String formId, @RequestParam("rentalTime") int rentalTime,
+                                     @RequestParam("productId") int productId, Authentication authentication) throws Exception {
+        System.out.println(formId + " " + rentalTime + " " + productId + " " + authentication);
+        Order order = productService.createOrder(formId, rentalTime, productId, authentication);
+//            productService.buyProduct(formId,rentalTime,productId,authentication);
+        rabbitSender.sendWaitForCodedMsg(order,30);
+        return new SimpleResponse("购买请求以创建，5分钟之内返回是否购买成功提醒");
     }
 
     @PostMapping("/mobileSendMsg")
@@ -68,10 +69,11 @@ public class ProductController {
         rabbitSender.sendCodeGetedMsg(receivedMobileData);
         return new SimpleResponse(receivedMobileData.toString());
     }
-    @PostMapping("/testDelay")
-    public void testDelay(ProductInfo productInfo,int delayTime) throws Exception {
-        rabbitSender.sendWaitForCodedMsg(productInfo,delayTime);
-    }
+
+//    @PostMapping("/testDelay")
+//    public void testDelay(ProductInfo productInfo, int delayTime) throws Exception {
+//        rabbitSender.sendWaitForCodedMsg(productInfo, delayTime);
+//    }
 
     private String getResAccessUrl(StorePath storePath) {
         String fileUrl = fdfsWebServer.getWebServerUrl() + "/" + storePath.getFullPath();

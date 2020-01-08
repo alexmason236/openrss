@@ -2,7 +2,10 @@ package com.zk.openrs.service;
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaSubscribeMessage;
+import com.sun.org.apache.xpath.internal.operations.Or;
 import com.zk.openrs.mapper.ProductMapper;
+import com.zk.openrs.pojo.Order;
+import com.zk.openrs.pojo.OrderStatus;
 import com.zk.openrs.pojo.ProductInfo;
 import com.zk.openrs.pojo.SimpleResponse;
 import com.zk.openrs.secuity.core.authentication.wechat.service.WechatUserDetails;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -49,6 +53,19 @@ public class ProductService {
                 .addData(new WxMaSubscribeMessage.Data("thing4","用户名：test,密码:test"));
         wxService.getMsgService().sendSubscribeMsg(wxMaSubscribeMessage);
         return new SimpleResponse("购买成功，稍后请关注发送的消息");
+    }
+
+    public Order createOrder(String formId,int rentalTime, int  productId, Authentication authentication) throws ParseException {
+        String openId=((WechatUserDetails)authentication.getPrincipal()).getUsername();
+        Date date=df.parse(df.format(new Date()));
+        Order order=new Order(productId,formId,rentalTime,openId,date, OrderStatus.CREATED);
+        int orderId=productMapper.createOrder(order);
+        order.setId(orderId);
+        return order;
+    }
+
+    private List<ProductInfo> preCheckResource(String category){
+
     }
 
 }
