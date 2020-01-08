@@ -1,9 +1,11 @@
 package com.zk.openrs.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
 
 import java.io.Serializable;
 
+@Data
 public class ProductInfo implements Serializable {
     int id;
     String productName;
@@ -13,72 +15,27 @@ public class ProductInfo implements Serializable {
     String productBindPassword;
     String productCurrentStatus;
     String productBindPicturePath;
+    String productBelongto;
 
     public ProductInfo() {
     }
 
-    public ProductInfo(String productName, String productBindAccount, String productBindPassword, String productCurrentStatus, String productBindPicturePath) {
+    public ProductInfo(String productName, String productBindAccount, String productBindPassword, String productCurrentStatus, String productBindPicturePath, String productBelongto) {
         this.productName = productName;
         this.productBindAccount = productBindAccount;
         this.productBindPassword = productBindPassword;
         this.productCurrentStatus = productCurrentStatus;
         this.productBindPicturePath = productBindPicturePath;
+        this.productBelongto = productBelongto;
     }
 
-    public ProductInfo(int id, String productName, String productBindAccount, String productBindPassword, String productCurrentStatus, String productBindPicturePath) {
+    public ProductInfo(int id, String productName, String productBindAccount, String productBindPassword, String productCurrentStatus, String productBindPicturePath, String productBelongto) {
         this.id = id;
         this.productName = productName;
         this.productBindAccount = productBindAccount;
         this.productBindPassword = productBindPassword;
         this.productCurrentStatus = productCurrentStatus;
         this.productBindPicturePath = productBindPicturePath;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getProductName() {
-        return productName;
-    }
-
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
-    public String getProductBindAccount() {
-        return productBindAccount;
-    }
-
-    public void setProductBindAccount(String productBindAccount) {
-        this.productBindAccount = productBindAccount;
-    }
-
-    public String getProductBindPassword() {
-        return productBindPassword;
-    }
-
-    public void setProductBindPassword(String productBindPassword) {
-        this.productBindPassword = productBindPassword;
-    }
-
-    public String getProductCurrentStatus() {
-        return productCurrentStatus;
-    }
-
-    public void setProductCurrentStatus(String productCurrentStatus) {
-        this.productCurrentStatus = productCurrentStatus;
-    }
-
-    public String getProductBindPicturePath() {
-        return productBindPicturePath;
-    }
-
-    public void setProductBindPicturePath(String productBindPicturePath) {
-        this.productBindPicturePath = productBindPicturePath;
+        this.productBelongto = productBelongto;
     }
 }
