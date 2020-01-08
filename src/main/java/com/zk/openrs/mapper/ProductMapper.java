@@ -10,4 +10,9 @@ public interface ProductMapper {
     void addProduct(ProductInfo productInfo);
     List<ProductInfo> getAllProduct();
     int createOrder(Order order);
+    List<ProductInfo> getProductByProductName(String productName);
+    void updateThisProduct(ProductInfo productInfo);
+    ProductInfo getProductByPhoneNumberAndProductNameAndProductStatus(String fromMobile, String productName, String productStatus);
+
+    Order getOrderByProductNameAndOrderStatus(int productId, String orderStatus);
 }

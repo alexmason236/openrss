@@ -6,6 +6,6 @@ import java.io.Serializable;
 
 @Data
 public class ReceivedMobileData implements Serializable {
-    String mobilePhoneNumber;
-    String messageContent;
+    String fromMobile;
+    String msgContent;
 }

@@ -24,6 +24,20 @@
        		(default,#{productId}, #{formId}, #{rentalTime}, #{openId},#{createTime})
     </insert>
 
+    <select id="getProductByProductName"  resultType="com.zk.openrs.pojo.ProductInfo">
+        select * from product where productName=#{productName} and productCurrentStatus='available'
+    </select>
 
+    <update id="updateThisProduct" parameterType="com.zk.openrs.pojo.ProductInfo">
+        UPDATE product SET productCurrentStatus='locked' WHERE id=#{id};
+    </update>
+
+    <select id="getProductByPhoneNumberAndProductNameAndProductStatus" parameterType="java.util.Map">
+        select * from product where productName=#{productName} and productBindAccount=#{fromMobile} and productCurrentStatus=#{productStatus}
+    </select>
+
+    <select id="getOrderByProductNameAndOrderStatus" parameterType="java.util.Map">
+        select * from orders where productId=#{productId} and completeFlag=#{orderStatus}
+    </select>
 
 </mapper>

@@ -2,7 +2,6 @@ package com.zk.openrs.service;
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaSubscribeMessage;
-import com.sun.org.apache.xpath.internal.operations.Or;
 import com.zk.openrs.mapper.ProductMapper;
 import com.zk.openrs.pojo.Order;
 import com.zk.openrs.pojo.OrderStatus;
@@ -55,17 +54,30 @@ public class ProductService {
         return new SimpleResponse("购买成功，稍后请关注发送的消息");
     }
 
-    public Order createOrder(String formId,int rentalTime, int  productId, Authentication authentication) throws ParseException {
+    @Transactional(rollbackFor = Exception.class)
+    public Order createOrder(String formId,int rentalTime, String productName, Authentication authentication) throws ParseException {
+        List<ProductInfo> productInfos = preCheckResource(productName);
+        if (productInfos==null) return null;
         String openId=((WechatUserDetails)authentication.getPrincipal()).getUsername();
         Date date=df.parse(df.format(new Date()));
-        Order order=new Order(productId,formId,rentalTime,openId,date, OrderStatus.CREATED);
+        ProductInfo productInfo=productInfos.get(0);
+        Order order=new Order(productInfo.getId(),formId,rentalTime,openId,date, OrderStatus.CREATED);
         int orderId=productMapper.createOrder(order);
+        productMapper.updateThisProduct(productInfo);
         order.setId(orderId);
         return order;
     }
 
-    private List<ProductInfo> preCheckResource(String category){
-
+    private List<ProductInfo> preCheckResource(String productName){
+        return productMapper.getProductByProductName(productName);
     }
 
+    public ProductInfo getProductByPhoneNumberAndProductNameAndProductStatus(String fromMobile, String productName, String productStatus) {
+
+        return productMapper.getProductByPhoneNumberAndProductNameAndProductStatus(fromMobile,productName,productStatus);
+    }
+
+    public Order getOrderByProductNameAndOrderStatus(int productId, String orderStatus) {
+        return productMapper.getOrderByProductNameAndOrderStatus(productId,orderStatus);
+    }
 }

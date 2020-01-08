@@ -52,7 +52,7 @@ public class RabbitSender{
         rabbitTemplate.setReturnCallback(returnCallback);
         //id + 时间戳 全局唯一  用于ack保证唯一一条消息,这边做测试写死一个。但是在做补偿策略的时候，必须保证这是全局唯一的消息
         CorrelationData correlationData = new CorrelationData(String.valueOf(new Date().getTime()));
-        rabbitTemplate.convertAndSend(RabbitMqConstant.TOPIC_EXCHANGE, ParseReceivedMobileMessageUtils.parse(receivedMobileData.getMessageContent()), receivedMobileData, correlationData);
+        rabbitTemplate.convertAndSend(RabbitMqConstant.TOPIC_EXCHANGE, ParseReceivedMobileMessageUtils.parse(receivedMobileData.getMsgContent()), receivedMobileData, correlationData);
     }
     public void sendWaitForCodedMsg(Order order, int delayTime) throws Exception {
         rabbitTemplate.setConfirmCallback(confirmCallback);
