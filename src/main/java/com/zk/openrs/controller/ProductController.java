@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 
@@ -68,6 +69,10 @@ public class ProductController {
         logger.info(receivedMobileData.toString());
         rabbitTemplate.convertAndSend(RabbitMqConstant.TOPIC_EXCHANGE, ParseReceivedMobileMessage.parse(receivedMobileData.getMessageContent()),receivedMobileData);
         return new SimpleResponse(receivedMobileData.toString());
+    }
+    @GetMapping("/getTestMsg")
+    public void getTestMsg(HttpServletRequest request){
+        System.out.println("收到安卓手机"+request.getParameter("fromMobile")+"发送过来的短信,短信内容为"+request.getParameter("msgContent"));
     }
 
     private String getResAccessUrl(StorePath storePath) {

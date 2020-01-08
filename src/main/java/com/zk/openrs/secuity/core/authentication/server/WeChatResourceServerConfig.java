@@ -20,9 +20,9 @@ public class WeChatResourceServerConfig extends ResourceServerConfigurerAdapter 
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers(securityProperties.getAuthorizedUrl(),"/oauth/token","/wx/user/login")
-                .permitAll()
-                .anyRequest().authenticated()
+//                .antMatchers(securityProperties.getAuthorizedUrl(),"/oauth/token","/wx/user/login")
+//                .permitAll()
+                .anyRequest().permitAll()
                 .and()
                 .apply(openIdAuthenticationSecurityConfig)
         .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
