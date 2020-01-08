@@ -22,4 +22,7 @@ public interface RabbitMqConstant {
     String LESHI_QUEUE = "leshi";
     String OTHERS_QUEUE="others";
     String TOPIC_EXCHANGE="exchange";
+    String DIRECT_CHECKCODE_QUEUE="checkcode";
+    String DELAYED_EXCHANGE_XDELAY="check_code_xdelay";
+    String DELAY_ROUTING_KEY_XDELAY="delay.xdelay";
 }

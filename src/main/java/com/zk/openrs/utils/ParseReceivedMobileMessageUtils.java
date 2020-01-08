@@ -1,8 +1,8 @@
-package com.zk.openrs.wechat.utils;
+package com.zk.openrs.utils;
 
 import com.zk.openrs.amqp.rabbitmq.RabbitMqConstant;
 
-public class ParseReceivedMobileMessage {
+public class ParseReceivedMobileMessageUtils {
     public static String parse(String content){
         if (content.contains("优酷")) return RabbitMqConstant.YOUKU_QUEUE_ROUTE_KEY;
         if (content.contains("迅雷")) return RabbitMqConstant.XUNLEI_QUEUE_ROUTE_KEY;

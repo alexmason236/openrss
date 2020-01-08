@@ -17,6 +17,10 @@ public class ProductInfo implements Serializable {
     public ProductInfo() {
     }
 
+    public ProductInfo(int id) {
+        this.id = id;
+    }
+
     public ProductInfo(String productName, String productBindAccount, String productBindPassword, String productCurrentStatus, String productBindPicturePath) {
         this.productName = productName;
         this.productBindAccount = productBindAccount;

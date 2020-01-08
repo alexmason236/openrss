@@ -1,11 +1,11 @@
 package com.zk.openrs.amqp.rabbitmq;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.core.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 public class RabbitMQConfig {
@@ -112,6 +112,23 @@ public class RabbitMQConfig {
     @Bean
     public Binding bindingOthersToExchange() {
         return BindingBuilder.bind(othersQueue()).to(exchange()).with(RabbitMqConstant.OTHERS_QUEUE_ROUTE_KEY);
+    }
+    @Bean
+    public Queue immediateQueue() {
+        // 第一个参数是创建的queue的名字，第二个参数是是否支持持久化
+        return new Queue(RabbitMqConstant.DIRECT_CHECKCODE_QUEUE, true);
+    }
+
+    @Bean
+    public CustomExchange delayExchange() {
+        Map<String, Object> args = new HashMap<String, Object>();
+        args.put("x-delayed-type", "direct");
+        return new CustomExchange(RabbitMqConstant.DELAYED_EXCHANGE_XDELAY, "x-delayed-message", true, false, args);
+    }
+
+    @Bean
+    public Binding bindingNotify() {
+        return BindingBuilder.bind(immediateQueue()).to(delayExchange()).with(RabbitMqConstant.DELAY_ROUTING_KEY_XDELAY).noargs();
     }
 
 }

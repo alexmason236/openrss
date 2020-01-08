@@ -3,19 +3,18 @@ package com.zk.openrs.controller;
 import com.github.tobato.fastdfs.domain.conn.FdfsWebServer;
 import com.github.tobato.fastdfs.domain.fdfs.StorePath;
 import com.github.tobato.fastdfs.service.FastFileStorageClient;
-import com.zk.openrs.amqp.rabbitmq.RabbitMQConfig;
 import com.zk.openrs.amqp.rabbitmq.RabbitMqConstant;
+import com.zk.openrs.amqp.rabbitmq.sender.RabbitSender;
 import com.zk.openrs.pojo.ProductInfo;
 import com.zk.openrs.pojo.PruductCurrentStatus;
 import com.zk.openrs.pojo.ReceivedMobileData;
 import com.zk.openrs.pojo.SimpleResponse;
 import com.zk.openrs.service.ProductService;
-import com.zk.openrs.wechat.utils.ParseReceivedMobileMessage;
+import com.zk.openrs.utils.ParseReceivedMobileMessageUtils;
 import me.chanjar.weixin.common.error.WxErrorException;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +35,7 @@ public class ProductController {
     @Resource
     private ProductService productService;
     @Autowired
-    private AmqpTemplate rabbitTemplate;
+    private RabbitSender rabbitSender;
 
     @PostMapping("/add")
     public SimpleResponse addProduct(@RequestParam("productName") String productName,
@@ -58,16 +57,20 @@ public class ProductController {
     }
     @PostMapping("/buyProduct")
     public SimpleResponse buyProduct(@RequestParam("formId") String formId,@RequestParam("rentalTime") int rentalTime,
-                                     @RequestParam("productId") int  productId, Authentication authentication) throws WxErrorException {
+                                     @RequestParam("productId") int  productId, Authentication authentication) throws Exception {
             System.out.println(formId+" "+rentalTime+" "+productId+" "+authentication);
             return  productService.buyProduct(formId,rentalTime,productId,authentication);
     }
 
     @PostMapping("/mobileSendMsg")
-    public SimpleResponse getMobileSendMsg(ReceivedMobileData receivedMobileData){
+    public SimpleResponse getMobileSendMsg(ReceivedMobileData receivedMobileData) throws Exception {
         logger.info(receivedMobileData.toString());
-        rabbitTemplate.convertAndSend(RabbitMqConstant.TOPIC_EXCHANGE, ParseReceivedMobileMessage.parse(receivedMobileData.getMessageContent()),receivedMobileData);
+        rabbitSender.sendCodeGetedMsg(receivedMobileData);
         return new SimpleResponse(receivedMobileData.toString());
+    }
+    @PostMapping("/testDelay")
+    public void testDelay(ProductInfo productInfo,int delayTime) throws Exception {
+        rabbitSender.sendWaitForCodedMsg(productInfo,delayTime);
     }
 
     private String getResAccessUrl(StorePath storePath) {
