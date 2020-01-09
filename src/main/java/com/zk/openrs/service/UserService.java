@@ -18,4 +18,8 @@ public class UserService {
     public WechatUser getByOpenId(String openId){
         return  userMapper.getByOpenId(openId);
     }
+
+    public void updateUserAccPoint(float accPoint, String openId) {
+        userMapper.updateUserAccPoint(accPoint,openId);
+    }
 }

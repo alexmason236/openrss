@@ -3,10 +3,7 @@ package com.zk.openrs.service;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaSubscribeMessage;
 import com.zk.openrs.mapper.ProductMapper;
-import com.zk.openrs.pojo.Order;
-import com.zk.openrs.pojo.OrderStatus;
-import com.zk.openrs.pojo.ProductInfo;
-import com.zk.openrs.pojo.SimpleResponse;
+import com.zk.openrs.pojo.*;
 import com.zk.openrs.secuity.core.authentication.wechat.service.WechatUserDetails;
 import com.zk.openrs.wechat.config.WxMaConfiguration;
 import com.zk.openrs.wechat.config.WxMaProperties;
@@ -20,7 +17,9 @@ import javax.annotation.Resource;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ProductService {
@@ -55,17 +54,20 @@ public class ProductService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public Order createOrder(String formId,int rentalTime, String productName, Authentication authentication) throws ParseException {
+    public Map<String, Object> createOrder(String formId, int rentalTime, String productName, Authentication authentication) throws ParseException {
         List<ProductInfo> productInfos = preCheckResource(productName);
-        if (productInfos==null) return null;
+        if (productInfos.size()==0) return null;
+        ProductInfo productInfo=productInfos.get(0);
         String openId=((WechatUserDetails)authentication.getPrincipal()).getUsername();
         Date date=df.parse(df.format(new Date()));
-        ProductInfo productInfo=productInfos.get(0);
         Order order=new Order(productInfo.getId(),formId,rentalTime,openId,date, OrderStatus.CREATED);
         int orderId=productMapper.createOrder(order);
-        productMapper.updateThisProduct(productInfo);
+        updateProductStatus(productInfo.getId(), ProductCurrentStatus.LOCKED);
         order.setId(orderId);
-        return order;
+        Map<String ,Object> map=new HashMap<>();
+        map.put("product",productInfo);
+        map.put("order",order);
+        return map;
     }
 
     private List<ProductInfo> preCheckResource(String productName){
@@ -79,5 +81,13 @@ public class ProductService {
 
     public Order getOrderByProductNameAndOrderStatus(int productId, String orderStatus) {
         return productMapper.getOrderByProductNameAndOrderStatus(productId,orderStatus);
+    }
+
+    public void updateProductStatus(int productId, String productStatus) {
+        productMapper.updateProductStatus(productId,productStatus);
+    }
+
+    public void updateOrderStatus(int orderId, String orderStatus) {
+        productMapper.updateOrderStatus(orderId,orderStatus);
     }
 }

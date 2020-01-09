@@ -17,7 +17,7 @@ public class OthersTopicListener {
     @RabbitHandler
     public void process(ReceivedMobileData message, Channel channel, @Headers Map<String, Object> headers) throws Exception {
         System.err.println("--------------------------------------");
-        System.out.println("Topic Receiver1 from others  : " + message.getMessageContent());
+        System.out.println("Topic Receiver1 from others  : " + message.getMsgContent());
         Long deliveryTag = (Long)headers.get(AmqpHeaders.DELIVERY_TAG);
         channel.basicAck(deliveryTag,false);
     }

@@ -21,23 +21,27 @@
         INSERT INTO
        		orders
        	VALUES
-       		(default,#{productId}, #{formId}, #{rentalTime}, #{openId},#{createTime})
+       		(default,#{productId}, #{formId}, #{rentalTime}, #{openId},#{createTime},"created")
     </insert>
 
     <select id="getProductByProductName"  resultType="com.zk.openrs.pojo.ProductInfo">
         select * from product where productName=#{productName} and productCurrentStatus='available'
     </select>
 
-    <update id="updateThisProduct" parameterType="com.zk.openrs.pojo.ProductInfo">
-        UPDATE product SET productCurrentStatus='locked' WHERE id=#{id};
-    </update>
-
-    <select id="getProductByPhoneNumberAndProductNameAndProductStatus" parameterType="java.util.Map">
+    <select id="getProductByPhoneNumberAndProductNameAndProductStatus" parameterType="java.util.Map" resultType="com.zk.openrs.pojo.ProductInfo">
         select * from product where productName=#{productName} and productBindAccount=#{fromMobile} and productCurrentStatus=#{productStatus}
     </select>
 
-    <select id="getOrderByProductNameAndOrderStatus" parameterType="java.util.Map">
+    <select id="getOrderByProductNameAndOrderStatus" parameterType="java.util.Map" resultType="com.zk.openrs.pojo.Order">
         select * from orders where productId=#{productId} and completeFlag=#{orderStatus}
     </select>
+
+    <update id="updateProductStatus" parameterType="java.util.Map">
+        UPDATE product SET productCurrentStatus=#{productStatus} WHERE id=#{productId};
+    </update>
+
+    <update id="updateOrderStatus" parameterType="java.util.Map">
+        UPDATE orders SET completeFlag=#{orderStatus} WHERE id=#{orderId};
+    </update>
 
 </mapper>

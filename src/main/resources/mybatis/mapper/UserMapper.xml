@@ -12,5 +12,9 @@
        	VALUES
        		(default,#{openId}, #{accPoint}, #{password}, #{nickName},#{gender},#{city},#{province})
     </insert>
+    
+    <update id="updateUserAccPoint" parameterType="java.util.Map">
+        update wechatuser set accPoint=accPoint+#{accPoint} where openId=#{openId}
+    </update>
 
 </mapper>

@@ -2,10 +2,11 @@ package com.zk.openrs.pojo;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
-public class Order {
+public class Order implements Serializable {
     int id;
     int productId;
     String formId;

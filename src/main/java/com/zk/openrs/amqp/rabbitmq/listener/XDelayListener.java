@@ -2,6 +2,7 @@ package com.zk.openrs.amqp.rabbitmq.listener;
 
 import com.rabbitmq.client.Channel;
 import com.zk.openrs.amqp.rabbitmq.RabbitMqConstant;
+import com.zk.openrs.pojo.Order;
 import com.zk.openrs.pojo.ProductInfo;
 import com.zk.openrs.pojo.ReceivedMobileData;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
@@ -16,9 +17,9 @@ import java.util.Map;
 @RabbitListener(queues = RabbitMqConstant.DIRECT_CHECKCODE_QUEUE)
 public class XDelayListener {
     @RabbitHandler
-    public void process(ProductInfo productInfo, Channel channel, @Headers Map<String, Object> headers) throws Exception {
+    public void process(Order order, Channel channel, @Headers Map<String, Object> headers) throws Exception {
         System.err.println("--------------------------------------");
-        System.out.println("Topic Receiver1 from xdelayMsg  : " + productInfo.getId());
+        System.out.println("Topic Receiver1 from xdelayMsg  : " + order.getProductId());
         Long deliveryTag = (Long)headers.get(AmqpHeaders.DELIVERY_TAG);
         channel.basicAck(deliveryTag,false);
     }

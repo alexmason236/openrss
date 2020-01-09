@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @RestController
@@ -57,11 +58,12 @@ public class ProductController {
     @PostMapping("/buyProduct")
     public SimpleResponse buyProduct(@RequestParam("formId") String formId, @RequestParam("rentalTime") int rentalTime,
                                      @RequestParam("productName") String productName, Authentication authentication) throws Exception {
-        Order order = productService.createOrder(formId, rentalTime, productName, authentication);
-        if(order==null) return new SimpleResponse("对不起，所有资源都在使用中，暂无可用的资源");
-
+        Map<String, Object> objectMap = productService.createOrder(formId, rentalTime, productName, authentication);
+        if(objectMap==null) return new SimpleResponse("对不起，所有资源都在使用中，暂无可用的资源");
+        Order order= (Order) objectMap.get("order");
+        ProductInfo productInfo= (ProductInfo) objectMap.get("product");
         rabbitSender.sendWaitForCodedMsg(order,30);
-        return new SimpleResponse("购买请求以创建，5分钟之内返回是否购买成功提醒");
+        return new SimpleResponse("购买请求以创建，账号为 "+productInfo.getProductBindAccount()+".请于5分钟之内登陆,过期账号将释放 ");
     }
 
     @GetMapping("/getTestMsg")

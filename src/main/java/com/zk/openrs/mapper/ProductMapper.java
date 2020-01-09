@@ -11,8 +11,10 @@ public interface ProductMapper {
     List<ProductInfo> getAllProduct();
     int createOrder(Order order);
     List<ProductInfo> getProductByProductName(String productName);
-    void updateThisProduct(ProductInfo productInfo);
     ProductInfo getProductByPhoneNumberAndProductNameAndProductStatus(String fromMobile, String productName, String productStatus);
-
     Order getOrderByProductNameAndOrderStatus(int productId, String orderStatus);
+
+    void updateProductStatus(int productId, String productStatus);
+
+    void updateOrderStatus(int orderId, String orderStatus);
 }

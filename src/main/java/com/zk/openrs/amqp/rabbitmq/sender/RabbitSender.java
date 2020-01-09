@@ -50,14 +50,12 @@ public class RabbitSender{
     public void sendCodeGetedMsg(ReceivedMobileData receivedMobileData) throws Exception {
         rabbitTemplate.setConfirmCallback(confirmCallback);
         rabbitTemplate.setReturnCallback(returnCallback);
-        //id + 时间戳 全局唯一  用于ack保证唯一一条消息,这边做测试写死一个。但是在做补偿策略的时候，必须保证这是全局唯一的消息
         CorrelationData correlationData = new CorrelationData(String.valueOf(new Date().getTime()));
         rabbitTemplate.convertAndSend(RabbitMqConstant.TOPIC_EXCHANGE, ParseReceivedMobileMessageUtils.parse(receivedMobileData.getMsgContent()), receivedMobileData, correlationData);
     }
     public void sendWaitForCodedMsg(Order order, int delayTime) throws Exception {
         rabbitTemplate.setConfirmCallback(confirmCallback);
         rabbitTemplate.setReturnCallback(returnCallback);
-        //id + 时间戳 全局唯一  用于ack保证唯一一条消息,这边做测试写死一个。但是在做补偿策略的时候，必须保证这是全局唯一的消息
         CorrelationData correlationData = new CorrelationData(String.valueOf(new Date().getTime()));
         rabbitTemplate.convertAndSend(RabbitMqConstant.DELAYED_EXCHANGE_XDELAY, RabbitMqConstant.DELAY_ROUTING_KEY_XDELAY,order, message -> {
             message.getMessageProperties().setDelay(delayTime*1000);
