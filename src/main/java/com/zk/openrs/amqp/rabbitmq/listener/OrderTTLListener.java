@@ -24,7 +24,7 @@ public class OrderTTLListener {
     @RabbitHandler
     public void process(Order order, Channel channel, @Headers Map<String, Object> headers) throws IOException {
         System.err.println("--------------------------------------");
-        System.out.println("Topic Receiver1 from xdelayMsg  : " + order);
+        System.out.println("Topic Receiver1 from TTLDelay: " + order);
         Long deliveryTag = (Long) headers.get(AmqpHeaders.DELIVERY_TAG);
         productService.updateProductStatus(order.getProductId(),ProductCurrentStatus.AVAILABLE);
         channel.basicAck(deliveryTag, false);
