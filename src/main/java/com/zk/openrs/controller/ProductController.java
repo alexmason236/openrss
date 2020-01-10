@@ -9,6 +9,7 @@ import com.zk.openrs.amqp.rabbitmq.sender.RabbitSender;
 import com.zk.openrs.pojo.*;
 import com.zk.openrs.secuity.core.authentication.wechat.service.WechatUserDetails;
 import com.zk.openrs.service.ProductService;
+import com.zk.openrs.service.UserService;
 import lombok.Data;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -39,15 +40,18 @@ public class ProductController {
     private RabbitSender rabbitSender;
     @Resource
     private AMQProperties amqProperties;
+    @Resource
+    private UserService userService;
 
     @PostMapping("/addProduct")
     public SimpleResponse addProduct(@RequestParam("productName") String productName,
-                                     @RequestParam("productBindAccount") String productBindAccount,@RequestParam("productBindPassword") String productBindPassword,
-                                     @RequestParam("productCategoryId") int productCategoryId,Authentication authentication) throws IOException {
-        String openId=((WechatUserDetails)authentication.getPrincipal()).getUsername();
-        productService.addProduct(new ProductInfo(productName, productBindAccount, productBindPassword, ProductCurrentStatus.AVAILABLE, "getResAccessUrl",openId,productCategoryId));
+                                     @RequestParam("productBindAccount") String productBindAccount, @RequestParam("productBindPassword") String productBindPassword,
+                                     @RequestParam("productCategoryId") int productCategoryId, Authentication authentication) throws IOException {
+        String openId = ((WechatUserDetails) authentication.getPrincipal()).getUsername();
+        productService.addProduct(new ProductInfo(productName, productBindAccount, productBindPassword, ProductCurrentStatus.AVAILABLE, "getResAccessUrl", openId, productCategoryId));
         return new SimpleResponse("商品添加成功");
     }
+
     @PostMapping("addCategory")
     public SimpleResponse addCategory(@RequestParam("categoryName") String categoryName,
                                       @RequestParam("productBindPicture") MultipartFile categoryBindPicture) throws IOException {
@@ -56,7 +60,7 @@ public class ProductController {
         }
         StorePath storePath = storageClient.uploadFile(categoryBindPicture.getInputStream(), categoryBindPicture.getSize(), FilenameUtils.getExtension(categoryBindPicture.getOriginalFilename()), null);
         logger.info("文件上传路径为: " + getResAccessUrl(storePath));
-        productService.addCategory(new ProductCategory(categoryName,getResAccessUrl(storePath)));
+        productService.addCategory(new ProductCategory(categoryName, getResAccessUrl(storePath)));
         return new SimpleResponse("类别添加成功");
     }
 
@@ -68,31 +72,33 @@ public class ProductController {
     @PostMapping("/buyProduct")
     public SimpleResponse buyProduct(@RequestParam("formId") String formId, @RequestParam("rentalTime") int rentalTime,
                                      @RequestParam("productName") String productName, Authentication authentication) throws Exception {
-//        if (rentalTime==0){
-//            rentalTime=6;
-//        }else if(rentalTime==1){
-//            rentalTime=12;
-//        }else if (rentalTime==2){
-//            rentalTime=24;
-//        }else {
-//            rentalTime=168;
-//        }
+        String openId=((WechatUserDetails)authentication.getPrincipal()).getUsername();
+        if (userService.getByOpenId(openId).getAccPoint()<rentalTime*1.0) return new SimpleResponse("对不起，你的积分不够");
+        if (rentalTime==0){
+            rentalTime=6;
+        }else if(rentalTime==1){
+            rentalTime=12;
+        }else if (rentalTime==2){
+            rentalTime=24;
+        }else {
+            rentalTime=168;
+        }
         Map<String, Object> objectMap = productService.createOrder(formId, rentalTime, productName, authentication);
-        if(objectMap==null) return new SimpleResponse("对不起，所有资源都在使用中，暂无可用的资源");
-        Order order= (Order) objectMap.get("order");
-        ProductInfo productInfo= (ProductInfo) objectMap.get("product");
-        rabbitSender.sendWaitForCodedMsg(order,amqProperties.getWait_for_code_time());
-        return new SimpleResponse("购买请求以创建，账号为 "+productInfo.getProductBindAccount()+".请于2分钟之内登陆,过期账号将释放 ");
+        if (objectMap == null) return new SimpleResponse("对不起，所有资源都在使用中，暂无可用的资源");
+        Order order = (Order) objectMap.get("order");
+        ProductInfo productInfo = (ProductInfo) objectMap.get("product");
+        rabbitSender.sendWaitForCodedMsg(order, amqProperties.getWait_for_code_time());
+        return new SimpleResponse("购买请求以创建，账号为 " + productInfo.getProductBindAccount() + ".请务必于5分钟之内使用短信登陆,过期账号将释放 ");
     }
 
     @GetMapping("/getTestMsg")
     public void getTestMsg(ReceivedMobileData receivedMobileData) throws Exception {
-        System.out.println("收到安卓手机"+receivedMobileData.getFromMobile()+"发送过来的短信,短信内容为:"+receivedMobileData.getMsgContent());
+        System.out.println("收到安卓手机" + receivedMobileData.getFromMobile() + "发送过来的短信,短信内容为:" + receivedMobileData.getMsgContent());
         rabbitSender.sendCodeGetedMsg(receivedMobileData);
     }
 
     @GetMapping("/getAllCategory")
-    public List<ProductCategory> getAllCategory(){
+    public List<ProductCategory> getAllCategory() {
         return productService.getAllCategory();
     }
 

@@ -7,4 +7,5 @@ public interface UserMapper {
     WechatUser getByOpenId(String openid);
 
     void updateUserAccPoint(float accPoint, String openId);
+
 }

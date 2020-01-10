@@ -33,15 +33,8 @@ public class YouKuTopicListener {
         Long deliveryTag = (Long) headers.get(AmqpHeaders.DELIVERY_TAG);
         String code = parser.parseCode(message.getMsgContent());
         if (code != null) {
-            try {
-                checkAndSendCodeService.CheckAndSendCode(code, message, ProductNameConstant.YOUKU, ProductCurrentStatus.LOCKED);
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                channel.basicAck(deliveryTag, false);
-            }
-        } else {
-            channel.basicAck(deliveryTag, false);
+            checkAndSendCodeService.CheckAndSendCode(code, message, ProductNameConstant.YOUKU, ProductCurrentStatus.LOCKED);
         }
+        channel.basicAck(deliveryTag, false);
     }
 }

@@ -57,7 +57,7 @@ public class WxMaUserController {
                 logger.info("user not exist, do REGIST");
                 WxMaUserInfo userInfo = wxService.getUserService().getUserInfo(sessionKey, encryptedData, iv);
                 //TODO 可以增加自己的逻辑，关联业务相关数据
-                WechatUser addedUser=new WechatUser(session.getOpenid(),10,"123456789",userInfo.getNickName(),userInfo.getGender(),userInfo.getCity(),userInfo.getProvince());
+                WechatUser addedUser=new WechatUser(session.getOpenid(),20,"123456789",userInfo.getNickName(),userInfo.getGender(),userInfo.getCity(),userInfo.getProvince());
                 userService.addUser(addedUser);
                 logger.info(JsonUtils.toJson(addedUser));
                 return JsonUtils.toJson(addedUser);

@@ -17,4 +17,5 @@
         update wechatuser set accPoint=accPoint+#{accPoint} where openId=#{openId}
     </update>
 
+
 </mapper>

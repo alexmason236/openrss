@@ -64,7 +64,7 @@ public class RabbitSender{
         rabbitTemplate.setReturnCallback(returnCallback);
         CorrelationData correlationData = new CorrelationData(String.valueOf(new Date().getTime()));
         rabbitTemplate.convertAndSend(RabbitMQConstant.DELAYED_EXCHANGE_XDELAY, RabbitMQConstant.WAIT_FOR_TTL_QUEUE_ROUTE_KEY,order, message -> {
-            message.getMessageProperties().setDelay(delayTime*1000*60);
+            message.getMessageProperties().setDelay(delayTime*1000*60*60*60);
             return message;
         },correlationData);
     }

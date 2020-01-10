@@ -22,4 +22,5 @@ public class UserService {
     public void updateUserAccPoint(float accPoint, String openId) {
         userMapper.updateUserAccPoint(accPoint,openId);
     }
+
 }

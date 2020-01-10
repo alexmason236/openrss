@@ -8,6 +8,7 @@ import com.zk.openrs.secuity.core.authentication.wechat.service.WechatUserDetail
 import com.zk.openrs.wechat.config.WxMaConfiguration;
 import com.zk.openrs.wechat.config.WxMaProperties;
 import me.chanjar.weixin.common.error.WxErrorException;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,8 @@ import java.util.Map;
 public class ProductService {
     @Resource
     private ProductMapper productMapper;
+    @Resource
+    private UserService userService;
     @Autowired
     WxMaProperties properties;
     SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -59,6 +62,7 @@ public class ProductService {
         if (productInfos.size()==0) return null;
         ProductInfo productInfo=productInfos.get(0);
         String openId=((WechatUserDetails)authentication.getPrincipal()).getUsername();
+        userService.updateUserAccPoint(-1*rentalTime,openId);
         Date date=df.parse(df.format(new Date()));
         Order order=new Order(productInfo.getId(),formId,rentalTime,openId,date, OrderStatus.CREATED);
         productMapper.createOrder(order);

@@ -26,17 +26,23 @@ public class CheckAndSendCodeService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Transactional(rollbackFor = Exception.class)
-    public void CheckAndSendCode(String code, ReceivedMobileData message, String categoryName, String productCurrentStatus) throws Exception {
+    public void CheckAndSendCode(String code, ReceivedMobileData message, String categoryName, String productCurrentStatus) {
         ProductInfo productInfo = productService.getProductByPhoneNumberAndProductNameAndProductStatus(message.getFromMobile(), categoryName, productCurrentStatus);
         if (productInfo != null) {
             Order order = productService.getOrderByProductNameAndOrderStatus(productInfo.getId(), OrderStatus.CREATED);
             if (order != null) {
                 //TODO 通过微信发送验证码逻辑
-                userService.updateUserAccPoint(-1 * order.getRentalTime(), order.getOpenId());
-                productService.updateProductStatus(productInfo.getId(), ProductCurrentStatus.INUSE);
-                productService.updateOrderStatus(order.getId(), OrderStatus.COMPLETE);
-                wxMessageService.send(order.getOpenId(), categoryName, order.getRentalTime(), code);
-                rabbitSender.sendWaitForOrderTTLMsg(order, order.getRentalTime());
+                try {
+                    wxMessageService.sendOrderSuccess(order.getOpenId(), categoryName, String.valueOf(order.getRentalTime()), "你的验证码是:"+code);
+                    userService.updateUserAccPoint(-1 * order.getRentalTime(), order.getOpenId());
+                    productService.updateProductStatus(productInfo.getId(), ProductCurrentStatus.INUSE);
+                    productService.updateOrderStatus(order.getId(), OrderStatus.COMPLETE);
+                    rabbitSender.sendWaitForOrderTTLMsg(order, order.getRentalTime());
+                } catch (WxErrorException e) {
+                    logger.info(e.getError().getErrorMsg());
+                    productService.updateProductStatus(productInfo.getId(), ProductCurrentStatus.AVAILABLE);
+                    productService.updateOrderStatus(order.getId(), OrderStatus.CANCELED);
+                }
             }
         }
     }

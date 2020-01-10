@@ -21,20 +21,20 @@ public class WxMessageService {
     SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 
-    public void send(String openId, String productName, int rentalTime, String code) throws WxErrorException {
-        WxMaService wxService = WxMaConfiguration.getMaService(properties.getConfigs().get(0).getAppid());
-        WxMaSubscribeMessage wxMaSubscribeMessage = new WxMaSubscribeMessage();
-        wxMaSubscribeMessage.setToUser(openId);
-        wxMaSubscribeMessage.setTemplateId(properties.getConfigs().get(0).getTemplate_id());
-        wxMaSubscribeMessage.addData(new WxMaSubscribeMessage.Data("thing1", productName))
-                .addData(new WxMaSubscribeMessage.Data("amount2", String.valueOf(rentalTime)))
-                .addData(new WxMaSubscribeMessage.Data("date3", df.format(new Date())))
-                .addData(new WxMaSubscribeMessage.Data("thing4", "你的验证码为" + code));
-        wxService.getMsgService().sendSubscribeMsg(wxMaSubscribeMessage);
+    public void sendOrderSuccess(String openId, String thing1, String account2, String content) throws WxErrorException {
+        sendMsg(openId, thing1, account2, content, properties, df);
 
     }
 
-    public void sendFailMsg(String openId, String thing1, String account2, String content) throws WxErrorException {
+    public void sendOrderFailMsg(String openId, String thing1, String account2, String content) throws WxErrorException {
+        sendMsg(openId, thing1, account2, content, properties, df);
+    }
+
+    public void sendOrderCompleteMsg(String openId, String thing1, String account2, String content) throws WxErrorException {
+        sendMsg(openId, thing1, account2, content, properties, df);
+    }
+
+    private static void sendMsg(String openId, String thing1, String account2, String content, WxMaProperties properties, SimpleDateFormat df) throws WxErrorException {
         WxMaService wxService = WxMaConfiguration.getMaService(properties.getConfigs().get(0).getAppid());
         WxMaSubscribeMessage wxMaSubscribeMessage = new WxMaSubscribeMessage();
         wxMaSubscribeMessage.setToUser(openId);
