@@ -90,4 +90,12 @@ public class ProductService {
     public void updateOrderStatus(int orderId, String orderStatus) {
         productMapper.updateOrderStatus(orderId,orderStatus);
     }
+
+    public void addCategory(ProductCategory productCategory) {
+        productMapper.addCategory(productCategory);
+    }
+
+    public List<ProductCategory> getAllCategory() {
+        return productMapper.getAllCategory();
+    }
 }

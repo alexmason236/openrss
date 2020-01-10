@@ -8,6 +8,7 @@ import com.zk.openrs.pojo.*;
 import com.zk.openrs.secuity.core.authentication.wechat.service.WechatUserDetails;
 import com.zk.openrs.service.ProductService;
 import com.zk.openrs.service.UserService;
+import com.zk.openrs.service.WxMessageService;
 import com.zk.openrs.utils.MsgParser;
 import com.zk.openrs.utils.parseImpl.YouKuMsgParserImpl;
 import com.zk.openrs.wechat.config.WxMaConfiguration;
@@ -31,6 +32,8 @@ public class YouKuTopicListener {
     private ProductService productService;
     @Resource
     private UserService userService;
+    @Resource
+    private WxMessageService wxMessageService;
 
     @RabbitHandler
     public void process(ReceivedMobileData message, Channel channel, @Headers Map<String, Object> headers) throws Exception {
@@ -48,6 +51,7 @@ public class YouKuTopicListener {
                 userService.updateUserAccPoint(-1*order.getRentalTime(),order.getOpenId());
                 productService.updateProductStatus(productInfo.getId(),ProductCurrentStatus.INUSE);
                 productService.updateOrderStatus(order.getId(),OrderStatus.COMPLETE);
+                wxMessageService.send(order.getOpenId(),ProductNameConstant.YOUKU,order.getRentalTime(),code);
             }
             System.out.println("获取到的CODE是："+code);
         }

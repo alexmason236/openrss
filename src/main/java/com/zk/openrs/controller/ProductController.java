@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @Data
@@ -35,19 +36,24 @@ public class ProductController {
     @Autowired
     private RabbitSender rabbitSender;
 
-    @PostMapping("/add")
+    @PostMapping("/addProduct")
     public SimpleResponse addProduct(@RequestParam("productName") String productName,
-                                     @RequestParam("productBindAccount") String productBindAccount,
-                                     @RequestParam("productBindPassword") String productBindPassword,
-                                     @RequestParam("productBindPicture") MultipartFile productBindPicture,Authentication authentication) throws IOException {
-        if (productBindPicture.isEmpty()) {
+                                     @RequestParam("productBindAccount") String productBindAccount,@RequestParam("productBindPassword") String productBindPassword,
+                                     @RequestParam("productCategoryId") int productCategoryId,Authentication authentication) throws IOException {
+        String openId=((WechatUserDetails)authentication.getPrincipal()).getUsername();
+        productService.addProduct(new ProductInfo(productName, productBindAccount, productBindPassword, ProductCurrentStatus.AVAILABLE, "getResAccessUrl",openId,productCategoryId));
+        return new SimpleResponse("商品添加成功");
+    }
+    @PostMapping("addCategory")
+    public SimpleResponse addCategory(@RequestParam("categoryName") String categoryName,
+                                      @RequestParam("productBindPicture") MultipartFile categoryBindPicture) throws IOException {
+        if (categoryBindPicture.isEmpty()) {
             return new SimpleResponse("请选择上传图片");
         }
-        String openId=((WechatUserDetails)authentication.getPrincipal()).getUsername();
-        StorePath storePath = storageClient.uploadFile(productBindPicture.getInputStream(), productBindPicture.getSize(), FilenameUtils.getExtension(productBindPicture.getOriginalFilename()), null);
+        StorePath storePath = storageClient.uploadFile(categoryBindPicture.getInputStream(), categoryBindPicture.getSize(), FilenameUtils.getExtension(categoryBindPicture.getOriginalFilename()), null);
         logger.info("文件上传路径为: " + getResAccessUrl(storePath));
-        productService.addProduct(new ProductInfo(productName, productBindAccount, productBindPassword, ProductCurrentStatus.AVAILABLE, getResAccessUrl(storePath),openId));
-        return new SimpleResponse(getResAccessUrl(storePath));
+        productService.addCategory(new ProductCategory(categoryName,getResAccessUrl(storePath)));
+        return new SimpleResponse("类别添加成功");
     }
 
     @GetMapping("/getAllProduct")
@@ -58,6 +64,15 @@ public class ProductController {
     @PostMapping("/buyProduct")
     public SimpleResponse buyProduct(@RequestParam("formId") String formId, @RequestParam("rentalTime") int rentalTime,
                                      @RequestParam("productName") String productName, Authentication authentication) throws Exception {
+        if (rentalTime==0){
+            rentalTime=6;
+        }else if(rentalTime==1){
+            rentalTime=12;
+        }else if (rentalTime==2){
+            rentalTime=24;
+        }else {
+            rentalTime=168;
+        }
         Map<String, Object> objectMap = productService.createOrder(formId, rentalTime, productName, authentication);
         if(objectMap==null) return new SimpleResponse("对不起，所有资源都在使用中，暂无可用的资源");
         Order order= (Order) objectMap.get("order");
@@ -70,6 +85,11 @@ public class ProductController {
     public void getTestMsg(ReceivedMobileData receivedMobileData) throws Exception {
         System.out.println("收到安卓手机"+receivedMobileData.getFromMobile()+"发送过来的短信,短信内容为:"+receivedMobileData.getMsgContent());
         rabbitSender.sendCodeGetedMsg(receivedMobileData);
+    }
+
+    @GetMapping("/getAllCategory")
+    public List<ProductCategory> getAllCategory(){
+        return productService.getAllCategory();
     }
 
 //    @PostMapping("/testDelay")

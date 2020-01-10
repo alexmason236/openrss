@@ -10,11 +10,11 @@
         INSERT INTO
        		product
        	VALUES
-       		(default,#{productName}, #{productBindAccount}, #{productBindPassword}, #{productCurrentStatus},#{productBindPicturePath})
+       		(default,#{productName}, #{productBindAccount}, #{productBindPassword}, #{productCurrentStatus},#{productBindPicturePath},#{productCategoryId})
     </insert>
 
     <select id="getAllProduct"  resultType="com.zk.openrs.pojo.ProductInfo">
-        select * from product
+        select distinct productName from product
     </select>
 
     <insert id="createOrder" parameterType="com.zk.openrs.pojo.Order" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
@@ -43,5 +43,17 @@
     <update id="updateOrderStatus" parameterType="java.util.Map">
         UPDATE orders SET completeFlag=#{orderStatus} WHERE id=#{orderId};
     </update>
+
+    <insert id="addCategory" parameterType="com.zk.openrs.pojo.ProductCategory">
+        INSERT INTO
+       		product_category
+       	VALUES
+       		(default,#{categoryName}, #{categoryBindPicturePath})
+    </insert>
+
+    <select id="getAllCategory" resultType="com.zk.openrs.pojo.ProductCategory">
+        select * from product_category
+    </select>
+
 
 </mapper>
