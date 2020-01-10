@@ -19,10 +19,10 @@ public class WxMessageService {
     WxMaProperties properties;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    final WxMaService wxService = WxMaConfiguration.getMaService(properties.getConfigs().get(0).getAppid());
+
 
     public void send(String openId, String productName, int rentalTime, String code) throws WxErrorException {
-
+        WxMaService wxService = WxMaConfiguration.getMaService(properties.getConfigs().get(0).getAppid());
         WxMaSubscribeMessage wxMaSubscribeMessage = new WxMaSubscribeMessage();
         wxMaSubscribeMessage.setToUser(openId);
         wxMaSubscribeMessage.setTemplateId(properties.getConfigs().get(0).getTemplate_id());
@@ -34,7 +34,8 @@ public class WxMessageService {
 
     }
 
-    public void sengFailMsg(String openId, String thing1, String account2, String content) throws WxErrorException {
+    public void sendFailMsg(String openId, String thing1, String account2, String content) throws WxErrorException {
+        WxMaService wxService = WxMaConfiguration.getMaService(properties.getConfigs().get(0).getAppid());
         WxMaSubscribeMessage wxMaSubscribeMessage = new WxMaSubscribeMessage();
         wxMaSubscribeMessage.setToUser(openId);
         wxMaSubscribeMessage.setTemplateId(properties.getConfigs().get(0).getTemplate_id());

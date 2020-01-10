@@ -36,7 +36,7 @@ public class CheckAndSendCodeService {
                 productService.updateProductStatus(productInfo.getId(), ProductCurrentStatus.INUSE);
                 productService.updateOrderStatus(order.getId(), OrderStatus.COMPLETE);
                 wxMessageService.send(order.getOpenId(), categoryName, order.getRentalTime(), code);
-                rabbitSender.sendWaitForOrderTTLMsg(order, order.getRentalTime() * 1000 * 60 * 60);
+                rabbitSender.sendWaitForOrderTTLMsg(order, order.getRentalTime());
             }
         }
     }

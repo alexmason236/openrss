@@ -3,6 +3,8 @@ package com.zk.openrs.controller;
 import com.github.tobato.fastdfs.domain.conn.FdfsWebServer;
 import com.github.tobato.fastdfs.domain.fdfs.StorePath;
 import com.github.tobato.fastdfs.service.FastFileStorageClient;
+import com.rabbitmq.client.impl.AMQBasicProperties;
+import com.zk.openrs.amqp.rabbitmq.properties.AMQProperties;
 import com.zk.openrs.amqp.rabbitmq.sender.RabbitSender;
 import com.zk.openrs.pojo.*;
 import com.zk.openrs.secuity.core.authentication.wechat.service.WechatUserDetails;
@@ -35,6 +37,8 @@ public class ProductController {
     private ProductService productService;
     @Autowired
     private RabbitSender rabbitSender;
+    @Resource
+    private AMQProperties amqProperties;
 
     @PostMapping("/addProduct")
     public SimpleResponse addProduct(@RequestParam("productName") String productName,
@@ -64,21 +68,21 @@ public class ProductController {
     @PostMapping("/buyProduct")
     public SimpleResponse buyProduct(@RequestParam("formId") String formId, @RequestParam("rentalTime") int rentalTime,
                                      @RequestParam("productName") String productName, Authentication authentication) throws Exception {
-        if (rentalTime==0){
-            rentalTime=6;
-        }else if(rentalTime==1){
-            rentalTime=12;
-        }else if (rentalTime==2){
-            rentalTime=24;
-        }else {
-            rentalTime=168;
-        }
+//        if (rentalTime==0){
+//            rentalTime=6;
+//        }else if(rentalTime==1){
+//            rentalTime=12;
+//        }else if (rentalTime==2){
+//            rentalTime=24;
+//        }else {
+//            rentalTime=168;
+//        }
         Map<String, Object> objectMap = productService.createOrder(formId, rentalTime, productName, authentication);
         if(objectMap==null) return new SimpleResponse("对不起，所有资源都在使用中，暂无可用的资源");
         Order order= (Order) objectMap.get("order");
         ProductInfo productInfo= (ProductInfo) objectMap.get("product");
-        rabbitSender.sendWaitForCodedMsg(order,300);
-        return new SimpleResponse("购买请求以创建，账号为 "+productInfo.getProductBindAccount()+".请于5分钟之内登陆,过期账号将释放 ");
+        rabbitSender.sendWaitForCodedMsg(order,amqProperties.getWait_for_code_time());
+        return new SimpleResponse("购买请求以创建，账号为 "+productInfo.getProductBindAccount()+".请于2分钟之内登陆,过期账号将释放 ");
     }
 
     @GetMapping("/getTestMsg")

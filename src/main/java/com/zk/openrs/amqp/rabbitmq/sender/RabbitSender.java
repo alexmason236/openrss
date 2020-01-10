@@ -43,13 +43,13 @@ public class RabbitSender{
     };
 
     //发送消息方法调用: 构建Message消息
-    public void sendCodeGetedMsg(ReceivedMobileData receivedMobileData) throws Exception {
+    public void sendCodeGetedMsg(ReceivedMobileData receivedMobileData) {
         rabbitTemplate.setConfirmCallback(confirmCallback);
         rabbitTemplate.setReturnCallback(returnCallback);
         CorrelationData correlationData = new CorrelationData(String.valueOf(new Date().getTime()));
         rabbitTemplate.convertAndSend(RabbitMQConstant.TOPIC_EXCHANGE, ParseReceivedMobileMessageUtils.parse(receivedMobileData.getMsgContent()), receivedMobileData, correlationData);
     }
-    public void sendWaitForCodedMsg(Order order, int delayTime) throws Exception {
+    public void sendWaitForCodedMsg(Order order, int delayTime) {
         rabbitTemplate.setConfirmCallback(confirmCallback);
         rabbitTemplate.setReturnCallback(returnCallback);
         CorrelationData correlationData = new CorrelationData(String.valueOf(new Date().getTime()));
@@ -59,12 +59,12 @@ public class RabbitSender{
         },correlationData);
     }
 
-    public void sendWaitForOrderTTLMsg(Order order, int delayTime) throws Exception {
+    public void sendWaitForOrderTTLMsg(Order order, int delayTime) {
         rabbitTemplate.setConfirmCallback(confirmCallback);
         rabbitTemplate.setReturnCallback(returnCallback);
         CorrelationData correlationData = new CorrelationData(String.valueOf(new Date().getTime()));
         rabbitTemplate.convertAndSend(RabbitMQConstant.DELAYED_EXCHANGE_XDELAY, RabbitMQConstant.WAIT_FOR_TTL_QUEUE_ROUTE_KEY,order, message -> {
-            message.getMessageProperties().setDelay(delayTime*1000);
+            message.getMessageProperties().setDelay(delayTime*1000*60);
             return message;
         },correlationData);
     }

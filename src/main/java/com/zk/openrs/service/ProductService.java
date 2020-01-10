@@ -61,7 +61,9 @@ public class ProductService {
         String openId=((WechatUserDetails)authentication.getPrincipal()).getUsername();
         Date date=df.parse(df.format(new Date()));
         Order order=new Order(productInfo.getId(),formId,rentalTime,openId,date, OrderStatus.CREATED);
-        int orderId=productMapper.createOrder(order);
+        productMapper.createOrder(order);
+        int orderId=order.getId();
+        System.out.println("插入后返回的ID是："+orderId);
         updateProductStatus(productInfo.getId(), ProductCurrentStatus.LOCKED);
         order.setId(orderId);
         Map<String ,Object> map=new HashMap<>();

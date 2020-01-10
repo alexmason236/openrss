@@ -45,12 +45,14 @@ public class XDelayListener {
 
     @Transactional(rollbackFor = Exception.class)
     public void checkOrderAndUpdate(Order order) throws WxErrorException {
+        logger.info("执行后检查任务,来检查订单是否被支付并释放资源");
         Order checkOrder = productService.getOrderByOrderId(order.getId());
         if (!checkOrder.getCompleteFlag().equals(OrderStatus.COMPLETE)) {
             //TODO 释放绑定的资源
+            logger.info("此订单被成功消费");
             productService.updateOrderStatus(checkOrder.getId(), OrderStatus.CANCELED);
             productService.updateProductStatus(order.getProductId(), ProductCurrentStatus.AVAILABLE);
-            wxMessageService.sengFailMsg(order.getOpenId(), productService.getById(order.getId()).getProductBindAccount(),
+            wxMessageService.sendFailMsg(order.getOpenId(), productService.getById(order.getProductId()).getProductBindAccount(),
                     String.valueOf(order.getRentalTime()), "此账号已被释放并退款，请重新购买");
         }
     }

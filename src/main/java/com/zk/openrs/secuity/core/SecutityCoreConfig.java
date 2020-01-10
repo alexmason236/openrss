@@ -1,5 +1,6 @@
 package com.zk.openrs.secuity.core;
 
+import com.zk.openrs.amqp.rabbitmq.properties.AMQProperties;
 import com.zk.openrs.secuity.core.properties.SecurityProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -8,7 +9,7 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
-@EnableConfigurationProperties(SecurityProperties.class)
+@EnableConfigurationProperties({SecurityProperties.class,AMQProperties.class})
 public class SecutityCoreConfig {
     @Bean
     public PasswordEncoder passwordEncoder(){
