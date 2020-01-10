@@ -1,13 +1,9 @@
 package com.zk.openrs.amqp.rabbitmq.sender;
 
-import com.zk.openrs.amqp.rabbitmq.RabbitMqConstant;
+import com.zk.openrs.amqp.rabbitmq.RabbitMQConstant;
 import com.zk.openrs.pojo.Order;
-import com.zk.openrs.pojo.ProductInfo;
 import com.zk.openrs.pojo.ReceivedMobileData;
 import com.zk.openrs.utils.ParseReceivedMobileMessageUtils;
-import org.springframework.amqp.AmqpException;
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,13 +47,23 @@ public class RabbitSender{
         rabbitTemplate.setConfirmCallback(confirmCallback);
         rabbitTemplate.setReturnCallback(returnCallback);
         CorrelationData correlationData = new CorrelationData(String.valueOf(new Date().getTime()));
-        rabbitTemplate.convertAndSend(RabbitMqConstant.TOPIC_EXCHANGE, ParseReceivedMobileMessageUtils.parse(receivedMobileData.getMsgContent()), receivedMobileData, correlationData);
+        rabbitTemplate.convertAndSend(RabbitMQConstant.TOPIC_EXCHANGE, ParseReceivedMobileMessageUtils.parse(receivedMobileData.getMsgContent()), receivedMobileData, correlationData);
     }
     public void sendWaitForCodedMsg(Order order, int delayTime) throws Exception {
         rabbitTemplate.setConfirmCallback(confirmCallback);
         rabbitTemplate.setReturnCallback(returnCallback);
         CorrelationData correlationData = new CorrelationData(String.valueOf(new Date().getTime()));
-        rabbitTemplate.convertAndSend(RabbitMqConstant.DELAYED_EXCHANGE_XDELAY, RabbitMqConstant.DELAY_ROUTING_KEY_XDELAY,order, message -> {
+        rabbitTemplate.convertAndSend(RabbitMQConstant.DELAYED_EXCHANGE_XDELAY, RabbitMQConstant.DELAY_ROUTING_KEY_XDELAY,order, message -> {
+            message.getMessageProperties().setDelay(delayTime*1000);
+            return message;
+        },correlationData);
+    }
+
+    public void sendWaitForOrderTTLMsg(Order order, int delayTime) throws Exception {
+        rabbitTemplate.setConfirmCallback(confirmCallback);
+        rabbitTemplate.setReturnCallback(returnCallback);
+        CorrelationData correlationData = new CorrelationData(String.valueOf(new Date().getTime()));
+        rabbitTemplate.convertAndSend(RabbitMQConstant.DELAYED_EXCHANGE_XDELAY, RabbitMQConstant.WAIT_FOR_TTL_QUEUE_ROUTE_KEY,order, message -> {
             message.getMessageProperties().setDelay(delayTime*1000);
             return message;
         },correlationData);

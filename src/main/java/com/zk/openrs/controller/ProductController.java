@@ -77,7 +77,7 @@ public class ProductController {
         if(objectMap==null) return new SimpleResponse("对不起，所有资源都在使用中，暂无可用的资源");
         Order order= (Order) objectMap.get("order");
         ProductInfo productInfo= (ProductInfo) objectMap.get("product");
-        rabbitSender.sendWaitForCodedMsg(order,30);
+        rabbitSender.sendWaitForCodedMsg(order,300);
         return new SimpleResponse("购买请求以创建，账号为 "+productInfo.getProductBindAccount()+".请于5分钟之内登陆,过期账号将释放 ");
     }
 

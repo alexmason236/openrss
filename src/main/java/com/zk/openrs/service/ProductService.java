@@ -98,4 +98,8 @@ public class ProductService {
     public List<ProductCategory> getAllCategory() {
         return productMapper.getAllCategory();
     }
+
+    public Order getOrderByOrderId(int id) {
+       return productMapper.getOrderByOrderId(id);
+    }
 }

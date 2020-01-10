@@ -1,6 +1,6 @@
 package com.zk.openrs.amqp.rabbitmq;
 
-public interface RabbitMqConstant {
+public interface RabbitMQConstant {
     String YOUKU_QUEUE_ROUTE_KEY = "topic.youku";
     String BADDU_QUEUE_ROUTE_KEY = "topic.baidu";
     String XUNLEI_QUEUE_ROUTE_KEY = "topic.xunlei";
@@ -25,4 +25,6 @@ public interface RabbitMqConstant {
     String DIRECT_CHECKCODE_QUEUE="checkcode";
     String DELAYED_EXCHANGE_XDELAY="check_code_xdelay";
     String DELAY_ROUTING_KEY_XDELAY="delay.xdelay";
+    String WAIT_FOR_TTL_QUEUE="wait4ttlQueue";
+    String WAIT_FOR_TTL_QUEUE_ROUTE_KEY="delay.wait4ttl";
 }

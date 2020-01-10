@@ -8,11 +8,17 @@ import java.util.List;
 
 public interface ProductMapper {
     ProductInfo getById(int pid);
+
     void addProduct(ProductInfo productInfo);
+
     List<ProductInfo> getAllProduct();
+
     int createOrder(Order order);
+
     List<ProductInfo> getProductByProductName(String productName);
+
     ProductInfo getProductByPhoneNumberAndProductNameAndProductStatus(String fromMobile, String productName, String productStatus);
+
     Order getOrderByProductNameAndOrderStatus(int productId, String orderStatus);
 
     void updateProductStatus(int productId, String productStatus);
@@ -22,4 +28,6 @@ public interface ProductMapper {
     void addCategory(ProductCategory productCategory);
 
     List<ProductCategory> getAllCategory();
+
+    Order getOrderByOrderId(int id);
 }

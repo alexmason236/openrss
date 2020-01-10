@@ -55,5 +55,9 @@
         select * from product_category
     </select>
 
+    <select id="getOrderByOrderId" parameterType="java.lang.Integer" resultType="com.zk.openrs.pojo.Order">
+        select * from orders where id=#{id}
+    </select>
+
 
 </mapper>
