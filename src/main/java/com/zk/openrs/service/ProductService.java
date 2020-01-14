@@ -8,7 +8,6 @@ import com.zk.openrs.secuity.core.authentication.wechat.service.WechatUserDetail
 import com.zk.openrs.wechat.config.WxMaConfiguration;
 import com.zk.openrs.wechat.config.WxMaProperties;
 import me.chanjar.weixin.common.error.WxErrorException;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -31,27 +30,31 @@ public class ProductService {
     @Autowired
     WxMaProperties properties;
     SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    public ProductInfo getById(int pid){
+
+    public ProductInfo getById(int pid) {
         return productMapper.getById(pid);
     }
-    public void addProduct(ProductInfo productInfo){
+
+    public void addProduct(ProductInfo productInfo) {
         productMapper.addProduct(productInfo);
     }
-    public List<ProductInfo> getAllProduct(){
+
+    public List<ProductInfo> getAllProduct() {
         return productMapper.getAllProduct();
     }
+
     @Transactional(rollbackFor = Exception.class)
-    public SimpleResponse buyProduct(String formId,int rentalTime, int  productId, Authentication authentication) throws WxErrorException {
+    public SimpleResponse buyProduct(String formId, int rentalTime, int productId, Authentication authentication) throws WxErrorException {
         final WxMaService wxService = WxMaConfiguration.getMaService(properties.getConfigs().get(0).getAppid());
-        String openId=((WechatUserDetails)authentication.getPrincipal()).getUsername();
-        System.out.println("用户openID: "+openId);
-        WxMaSubscribeMessage wxMaSubscribeMessage=new WxMaSubscribeMessage();
+        String openId = ((WechatUserDetails) authentication.getPrincipal()).getUsername();
+        System.out.println("用户openID: " + openId);
+        WxMaSubscribeMessage wxMaSubscribeMessage = new WxMaSubscribeMessage();
         wxMaSubscribeMessage.setToUser(openId);
         wxMaSubscribeMessage.setTemplateId(properties.getConfigs().get(0).getTemplate_id());
-        wxMaSubscribeMessage.addData(new WxMaSubscribeMessage.Data("thing1","优酷会员"))
-                .addData(new WxMaSubscribeMessage.Data("amount2","6.66"))
-                .addData(new WxMaSubscribeMessage.Data("date3",df.format(new Date())))
-                .addData(new WxMaSubscribeMessage.Data("thing4","用户名：test,密码:test"));
+        wxMaSubscribeMessage.addData(new WxMaSubscribeMessage.Data("thing1", "优酷会员"))
+                .addData(new WxMaSubscribeMessage.Data("amount2", "6.66"))
+                .addData(new WxMaSubscribeMessage.Data("date3", df.format(new Date())))
+                .addData(new WxMaSubscribeMessage.Data("thing4", "用户名：test,密码:test"));
         wxService.getMsgService().sendSubscribeMsg(wxMaSubscribeMessage);
         return new SimpleResponse("购买成功，稍后请关注发送的消息");
     }
@@ -59,42 +62,42 @@ public class ProductService {
     @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> createOrder(String formId, int rentalTime, String productName, Authentication authentication) throws ParseException {
         List<ProductInfo> productInfos = preCheckResource(productName);
-        if (productInfos.size()==0) return null;
-        ProductInfo productInfo=productInfos.get(0);
-        String openId=((WechatUserDetails)authentication.getPrincipal()).getUsername();
-        userService.updateUserAccPoint(-1*rentalTime,openId);
-        Date date=df.parse(df.format(new Date()));
-        Order order=new Order(productInfo.getId(),formId,rentalTime,openId,date, OrderStatus.CREATED);
+        if (productInfos.size() == 0) return null;
+        ProductInfo productInfo = productInfos.get(0);
+        String openId = ((WechatUserDetails) authentication.getPrincipal()).getUsername();
+        userService.updateUserAccPoint(-1 * rentalTime, openId);
+        Date date = df.parse(df.format(new Date()));
+        Order order = new Order(productInfo.getId(), formId, rentalTime, openId, date, OrderStatus.CREATED);
         productMapper.createOrder(order);
-        int orderId=order.getId();
-        System.out.println("插入后返回的ID是："+orderId);
+        int orderId = order.getId();
+        System.out.println("插入后返回的ID是：" + orderId);
         updateProductStatus(productInfo.getId(), ProductCurrentStatus.LOCKED);
         order.setId(orderId);
-        Map<String ,Object> map=new HashMap<>();
-        map.put("product",productInfo);
-        map.put("order",order);
+        Map<String, Object> map = new HashMap<>();
+        map.put("product", productInfo);
+        map.put("order", order);
         return map;
     }
 
-    private List<ProductInfo> preCheckResource(String productName){
+    private List<ProductInfo> preCheckResource(String productName) {
         return productMapper.getProductByProductName(productName);
     }
 
     public ProductInfo getProductByPhoneNumberAndProductNameAndProductStatus(String fromMobile, String productName, String productStatus) {
 
-        return productMapper.getProductByPhoneNumberAndProductNameAndProductStatus(fromMobile,productName,productStatus);
+        return productMapper.getProductByPhoneNumberAndProductNameAndProductStatus(fromMobile, productName, productStatus);
     }
 
     public Order getOrderByProductNameAndOrderStatus(int productId, String orderStatus) {
-        return productMapper.getOrderByProductNameAndOrderStatus(productId,orderStatus);
+        return productMapper.getOrderByProductNameAndOrderStatus(productId, orderStatus);
     }
 
     public void updateProductStatus(int productId, String productStatus) {
-        productMapper.updateProductStatus(productId,productStatus);
+        productMapper.updateProductStatus(productId, productStatus);
     }
 
     public void updateOrderStatus(int orderId, String orderStatus) {
-        productMapper.updateOrderStatus(orderId,orderStatus);
+        productMapper.updateOrderStatus(orderId, orderStatus);
     }
 
     public void addCategory(ProductCategory productCategory) {
@@ -106,6 +109,20 @@ public class ProductService {
     }
 
     public Order getOrderByOrderId(int id) {
-       return productMapper.getOrderByOrderId(id);
+        return productMapper.getOrderByOrderId(id);
+    }
+
+    public List<ProductCategory> getCategoryBiCid(int categoryId) {
+        return productMapper.getCategoryBiCid(categoryId);
+    }
+
+    public List<ProductInfo> getAvailableProductByCategoryId(int categoryId) {
+        return productMapper.getAvailableProductByCategoryId(categoryId);
+
+    }
+
+    public float getProductCurrentPrice(int categoryId) {
+        List<ProductCategory> productCategory=productMapper.getCategoryBiCid(categoryId);
+        return productCategory.get(0).getPrice();
     }
 }

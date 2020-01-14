@@ -36,10 +36,10 @@ public class WxMaUserController {
     /**
      * 登陆接口
      */
-    @GetMapping("/login")
-    public String login( String code,String signature, String rawData, String encryptedData, String iv) {
-        if (StringUtils.isBlank(code) || StringUtils.isBlank(signature) || StringUtils.isBlank(rawData) || StringUtils.isBlank(encryptedData) || StringUtils.isBlank(iv)) {
-            return "empty jscode or other ";
+    @GetMapping("/register")
+    public String login( String code, String encryptedData, String iv) {
+        if (StringUtils.isBlank(code) || StringUtils.isBlank(encryptedData) || StringUtils.isBlank(iv)) {
+            return "empty code or other ";
         }
 
         final WxMaService wxService = WxMaConfiguration.getMaService(properties.getConfigs().get(0).getAppid());
@@ -49,9 +49,6 @@ public class WxMaUserController {
 //            this.logger.info(session.getSessionKey());
 //            this.logger.info(session.getOpenid());
             String sessionKey=session.getSessionKey();
-            if (!wxService.getUserService().checkUserInfo(sessionKey, rawData, signature)) {
-                return "user check failed";
-            }
             WechatUser wechatUser=userService.getByOpenId(session.getOpenid());
             if (wechatUser==null){
                 logger.info("user not exist, do REGIST");

@@ -4,6 +4,7 @@
 package com.zk.openrs.secuity.core.authentication.wechat.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zk.openrs.pojo.ExceptionResponse;
 import com.zk.openrs.secuity.core.authentication.support.SimpleResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,13 +38,13 @@ public class WechatAuthenctiationFailureHandler extends SimpleUrlAuthenticationF
 	 */
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-                                        AuthenticationException exception) throws IOException, ServletException {
+                                        AuthenticationException exception) throws IOException {
 
 		logger.info("登录失败");
 
-		response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+		response.setStatus(HttpStatus.ALREADY_REPORTED.value());
 		response.setContentType("application/json;charset=UTF-8");
-		response.getWriter().write(objectMapper.writeValueAsString(new SimpleResponse(exception.getMessage())));
+		response.getWriter().write(objectMapper.writeValueAsString(new ExceptionResponse(40400,exception.getMessage())));
 
 	}
 

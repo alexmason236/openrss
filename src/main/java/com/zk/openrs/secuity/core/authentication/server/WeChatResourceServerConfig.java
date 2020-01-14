@@ -17,17 +17,17 @@ public class WeChatResourceServerConfig extends ResourceServerConfigurerAdapter 
     private OpenIdAuthenticationSecurityConfig openIdAuthenticationSecurityConfig;
     @Resource
     private SecurityProperties securityProperties;
+
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers(securityProperties.getAuthorizedUrl(),"/oauth/token","/wx/user/login","/product/getTestMsg")
-                .permitAll()
-                .anyRequest().authenticated()
+//                .antMatchers(securityProperties.getAuthorizedUrl(), "/oauth/token", "/wx/user/login", "/product/getTestMsg", "/product/getAllCategory")
+                .antMatchers("/product/buyProduct","/product/productAvailableCountAndPrice")
+                .authenticated()
+                .anyRequest().permitAll()
                 .and()
                 .apply(openIdAuthenticationSecurityConfig)
-        .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
     }
-
-
 }

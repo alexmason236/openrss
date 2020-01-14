@@ -59,5 +59,13 @@
         select * from orders where id=#{id}
     </select>
 
+    <select id="getCategoryBiCid" parameterType="java.lang.Integer" resultType="com.zk.openrs.pojo.ProductCategory">
+        select * from product_category where id=#{categoryId}
+    </select>
+
+    <select id="getAvailableProductByCategoryId" parameterType="java.lang.Integer" resultType="com.zk.openrs.pojo.ProductInfo">
+        select * from product where productCategoryId=#{categoryId} and productCurrentStatus='available'
+    </select>
+
 
 </mapper>

@@ -92,7 +92,7 @@ public class ProductController {
     }
 
     @GetMapping("/getTestMsg")
-    public void getTestMsg(ReceivedMobileData receivedMobileData) throws Exception {
+    public void getTestMsg(ReceivedMobileData receivedMobileData)  {
         System.out.println("收到安卓手机" + receivedMobileData.getFromMobile() + "发送过来的短信,短信内容为:" + receivedMobileData.getMsgContent());
         rabbitSender.sendCodeGetedMsg(receivedMobileData);
     }
@@ -102,10 +102,22 @@ public class ProductController {
         return productService.getAllCategory();
     }
 
+    @GetMapping("/getCategoryBiCid")
+    public List<ProductCategory> getCategoryBiCid(@RequestParam("categoryId") int categoryId) {
+        return productService.getCategoryBiCid(categoryId);
+    }
+
 //    @PostMapping("/testDelay")
 //    public void testDelay(ProductInfo productInfo, int delayTime) throws Exception {
 //        rabbitSender.sendWaitForCodedMsg(productInfo, delayTime);
 //    }
+
+    @GetMapping("/productAvailableCountAndPrice")
+    public ProductCountAndPrice productAvailableCountAndPrice(int categoryId){
+        List<ProductInfo> productInfos= productService.getAvailableProductByCategoryId(categoryId);
+        float price=productService.getProductCurrentPrice(categoryId);
+        return new ProductCountAndPrice(productInfos.size(),price);
+    }
 
     private String getResAccessUrl(StorePath storePath) {
         String fileUrl = fdfsWebServer.getWebServerUrl() + "/" + storePath.getFullPath();

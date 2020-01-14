@@ -21,7 +21,7 @@ public class OpenIdAuthenticationSecurityConfig extends SecurityConfigurerAdapte
     private UserDetailsService wechatUserDetailService;
 
     @Override
-    public void configure(HttpSecurity builder) throws Exception {
+    public void configure(HttpSecurity builder) {
         OpenIdAuthenticationFilter openIdAuthenticationFilter=new OpenIdAuthenticationFilter();
         openIdAuthenticationFilter.setAuthenticationManager(builder.getSharedObject(AuthenticationManager.class));
         openIdAuthenticationFilter.setAuthenticationSuccessHandler(weChatAuthenticateSuccessHandler);

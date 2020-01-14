@@ -30,4 +30,8 @@ public interface ProductMapper {
     List<ProductCategory> getAllCategory();
 
     Order getOrderByOrderId(int id);
+
+    List<ProductCategory> getCategoryBiCid(int categoryId);
+
+    List<ProductInfo> getAvailableProductByCategoryId(int categoryId);
 }
