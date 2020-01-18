@@ -59,10 +59,10 @@ public class ProductService {
         return new SimpleResponse("购买成功，稍后请关注发送的消息");
     }
 
-    @Transactional(rollbackFor = Exception.class)
-    public Map<String, Object> createOrder(String formId, int rentalTime, String productName, Authentication authentication) throws ParseException {
+
+    public Map<String, Object> createOrder(String formId, int rentalTime, String productName, Authentication authentication) throws Exception {
         List<ProductInfo> productInfos = preCheckResource(productName);
-        if (productInfos.size() == 0) return null;
+        if (productInfos.size() == 0) throw new Exception(productName+" 暂无可用资源");
         ProductInfo productInfo = productInfos.get(0);
         String openId = ((WechatUserDetails) authentication.getPrincipal()).getUsername();
         userService.updateUserAccPoint(-1 * rentalTime, openId);
@@ -124,5 +124,17 @@ public class ProductService {
     public float getProductCurrentPrice(int categoryId) {
         List<ProductCategory> productCategory=productMapper.getCategoryBiCid(categoryId);
         return productCategory.get(0).getPrice();
+    }
+
+    public List<Order> getOrdersByUser(String openId) {
+        return productMapper.getOrdersByUser(openId);
+    }
+
+    public void addBanner(Banner banner) {
+        productMapper.addBanner(banner);
+    }
+
+    public List<Banner> getBanner() {
+        return productMapper.getBanner();
     }
 }

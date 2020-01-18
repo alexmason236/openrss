@@ -43,7 +43,7 @@ public class XDelayListener {
 
     @Transactional(rollbackFor = Exception.class)
     public void checkOrderAndUpdate(Order order) {
-        logger.info("执行后检查任务,来检查订单是否被支付并释放资源");
+        logger.info("执行后检查任务,来检查订单是否登入并获取到验证码并修改资源状态");
         Order checkOrder = productService.getOrderByOrderId(order.getId());
         if (!checkOrder.getCompleteFlag().equals(OrderStatus.COMPLETE)) {
             //TODO 释放绑定的资源

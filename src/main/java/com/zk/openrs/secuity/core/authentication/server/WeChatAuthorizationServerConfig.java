@@ -20,7 +20,7 @@ public class WeChatAuthorizationServerConfig extends AuthorizationServerConfigur
     private SecurityProperties securityProperties;
     @Resource
     private UserDetailsService wechatUserDetailService;
-    public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
+    public void configure(AuthorizationServerSecurityConfigurer security)  {
         security.tokenKeyAccess("permitAll()");
     }
 

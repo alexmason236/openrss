@@ -1,5 +1,6 @@
 package com.zk.openrs.mapper;
 
+import com.zk.openrs.pojo.Banner;
 import com.zk.openrs.pojo.Order;
 import com.zk.openrs.pojo.ProductCategory;
 import com.zk.openrs.pojo.ProductInfo;
@@ -34,4 +35,10 @@ public interface ProductMapper {
     List<ProductCategory> getCategoryBiCid(int categoryId);
 
     List<ProductInfo> getAvailableProductByCategoryId(int categoryId);
+
+    List<Order> getOrdersByUser(String openId);
+
+    void addBanner(Banner banner);
+
+    List<Banner> getBanner();
 }

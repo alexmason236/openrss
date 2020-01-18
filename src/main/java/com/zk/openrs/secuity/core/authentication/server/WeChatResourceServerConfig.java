@@ -22,7 +22,7 @@ public class WeChatResourceServerConfig extends ResourceServerConfigurerAdapter 
     public void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
 //                .antMatchers(securityProperties.getAuthorizedUrl(), "/oauth/token", "/wx/user/login", "/product/getTestMsg", "/product/getAllCategory")
-                .antMatchers("/product/buyProduct","/product/productAvailableCountAndPrice")
+                .antMatchers("/product/buyProduct","/product/productAvailableCountAndPrice","/product/addCategory","/product/addProduct")
                 .authenticated()
                 .anyRequest().permitAll()
                 .and()

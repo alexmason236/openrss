@@ -10,7 +10,7 @@
         INSERT INTO
        		product
        	VALUES
-       		(default,#{productName}, #{productBindAccount}, #{productBindPassword}, #{productCurrentStatus},#{productBindPicturePath},#{productCategoryId})
+       		(default,#{productName}, #{productBindAccount}, #{productBindPassword}, #{productCurrentStatus},#{productBindPicturePath},#{productBelongto},#{productCategoryId})
     </insert>
 
     <select id="getAllProduct"  resultType="com.zk.openrs.pojo.ProductInfo">
@@ -48,7 +48,7 @@
         INSERT INTO
        		product_category
        	VALUES
-       		(default,#{categoryName}, #{categoryBindPicturePath})
+       		(default,#{categoryName}, #{categoryBindPicturePath},#{price})
     </insert>
 
     <select id="getAllCategory" resultType="com.zk.openrs.pojo.ProductCategory">
@@ -67,5 +67,18 @@
         select * from product where productCategoryId=#{categoryId} and productCurrentStatus='available'
     </select>
 
+    <select id="getOrdersByUser" parameterType="java.lang.String" resultType="com.zk.openrs.pojo.Order">
+        select * from orders where openId=#{openId}
+    </select>
 
+    <insert id="addBanner" parameterType="com.zk.openrs.pojo.Banner">
+        INSERT INTO
+       		banner
+       	VALUES
+       		(default,#{imgPath}, #{isValidNow})
+    </insert>
+
+    <select id="getBanner" resultType="com.zk.openrs.pojo.Banner">
+        select * from banner where isValidNow=1
+    </select>
 </mapper>

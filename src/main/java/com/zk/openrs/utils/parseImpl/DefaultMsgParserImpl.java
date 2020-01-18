@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class YouKuMsgParserImpl implements MsgParser {
+public class DefaultMsgParserImpl implements MsgParser {
     @Override
     public String parseCode(String content) {
         String[] strings = content.split("@");

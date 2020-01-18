@@ -14,6 +14,9 @@ public class Order implements Serializable {
     String openId;
     Date createTime;
     String completeFlag;
+    String bindPicPath;
+    String bindAccount;
+    long expire_in;
 
     public Order(int productId, String formId, int rentalTime, String openId, Date createTime,String completeFlag) {
         this.productId = productId;

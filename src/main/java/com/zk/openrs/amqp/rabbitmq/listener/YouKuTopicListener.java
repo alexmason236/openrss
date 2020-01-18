@@ -5,7 +5,7 @@ import com.zk.openrs.amqp.rabbitmq.RabbitMQConstant;
 import com.zk.openrs.amqp.rabbitmq.service.CheckAndSendCodeService;
 import com.zk.openrs.pojo.*;
 import com.zk.openrs.utils.MsgParser;
-import com.zk.openrs.utils.parseImpl.YouKuMsgParserImpl;
+import com.zk.openrs.utils.parseImpl.DefaultMsgParserImpl;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.AmqpHeaders;
@@ -26,7 +26,7 @@ public class YouKuTopicListener {
 
     @RabbitHandler
     public void process(ReceivedMobileData message, Channel channel, @Headers Map<String, Object> headers) throws IOException {
-        MsgParser parser = new YouKuMsgParserImpl();
+        MsgParser parser = new DefaultMsgParserImpl();
 
         System.err.println("--------------------------------------");
         System.out.println("Topic Receiver1 from youku  : " + message.getMsgContent());
